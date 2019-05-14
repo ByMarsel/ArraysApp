@@ -9,7 +9,7 @@ namespace ArraysApp
         static void Main(string[] args)
         {
           
-            var queue = new PriorityQueue<string>(new VectorArray<string>(10), new [] {10});
+            var queue = new PriorityQueue<string>();
             queue.Enqueue("первый", 1);
             queue.Enqueue("второй", 1);
             queue.Enqueue("третий", 2);
