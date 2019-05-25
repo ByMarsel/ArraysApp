@@ -11,8 +11,18 @@ namespace ArraysApp
             
             var queue = new Queue<string>();
             
+            queue.Enqueue("первый");
+            queue.Enqueue("вторый");
+            queue.Enqueue("третий");
+            queue.Enqueue("четвертый");
             
-          
+            Console.WriteLine(queue.Dequeue());
+            Console.WriteLine(queue.Dequeue());
+            Console.WriteLine(queue.Dequeue());
+            queue.Enqueue("пятый");
+            Console.WriteLine(queue.Dequeue());
+            Console.WriteLine(queue.Dequeue());
+
             var priorityQueue = new PriorityQueue<string>();
             priorityQueue.Enqueue("первый 1", 1);
             priorityQueue.Enqueue("второй 1", 1);
@@ -25,7 +35,8 @@ namespace ArraysApp
             Console.WriteLine("достали: " + priorityQueue.Dequeue());
             priorityQueue.Print();
             priorityQueue.Enqueue("третий 1", 1);
-            priorityQueue.Print();
+            priorityQueue.Print(); 
+            
             Console.ReadKey();
         }
     }

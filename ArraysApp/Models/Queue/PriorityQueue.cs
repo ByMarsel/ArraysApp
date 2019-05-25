@@ -25,20 +25,13 @@ namespace ArraysApp.Models.Queue
 
                 if (queue != null && queue.Size > 0)
                 {
-
-                    minPriority++;
                     Size--;
-                   
                     return queue.Remove(0);
                 }
                 else
                 {
                     minPriority++;
-                    var newArray = new IArray<T>[array.Length - 1];
-                    for (int i = 1; i < array.Length; i++) {
-                        newArray[i - 1] = array[i];
-                    }
-                    array = newArray;
+                    SlideToBack();
                     return Dequeue();
                 }
 
@@ -50,30 +43,30 @@ namespace ArraysApp.Models.Queue
         {
 
             ValidatePriority(priority);
+            int arrIndex = priority - 1;
 
-            if (array.Length > priority - 1)
+            if (array.Length > arrIndex)
             {
-                if (array[priority - 1] != null)
+                if (priority < minPriority)
                 {
-                    array[priority - 1].Add(item);
+                    SlideToAhead();
+                    minPriority = priority;
+                }
+                
+                if (array[arrIndex] != null)
+                {
+                    array[arrIndex].Add(item);
                 }
                 else
                 {
-                    if (priority < minPriority) {
-                        SlideToAhead();
-                    }
-           
-                    array[priority - 1] = new SingleArray<T>();
-                    array[priority - 1].Add(item);
-                }
-                if (minPriority > priority) {
-                    minPriority = priority;
+                    array[arrIndex] = new SingleArray<T>();
+                    array[arrIndex].Add(item);
                 }
                 Size++;
             }
             else
             {
-                IncreaseSize();
+                Resize(priority);
                 Enqueue(item, priority);
             }
         }
@@ -86,14 +79,25 @@ namespace ArraysApp.Models.Queue
             }
         }
 
-        private void IncreaseSize()
+        private void Resize(int priority)
         {
-            Array.Resize(ref array, array.Length+1);
+            var newLenght = array.Length >= priority ? array.Length : priority;
+            if (array.Length != newLenght)
+            {
+                Array.Resize(ref array, array.Length + 1);
+            }
         }
 
         private void SlideToAhead() {
             var newArray = new IArray<T>[array.Length + 1];
             Array.Copy(array, 0, newArray, 1, array.Length);
+            array = newArray;
+        }
+
+        private void SlideToBack()
+        {
+            var newArray = new IArray<T>[array.Length - 1];
+            Array.Copy(array, 1, newArray, 0, array.Length);
             array = newArray;
         }
 
