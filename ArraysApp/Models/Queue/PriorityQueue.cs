@@ -7,110 +7,117 @@ using System.Threading.Tasks;
 
 namespace ArraysApp.Models.Queue
 {
-    struct PriorityValue<T>
-    {
-        public int Priority;
-        public IArray<T> items;
-        public PriorityValue(int priority, IArray<T> items)
-        {
-            this.Priority = priority;
-            this.items = items;
-        }
-    }
 
     public class PriorityQueue<T> : IPriorityQueue<T>
     {
-        private PriorityValue<T>[] array;
         public int Size { get; private set; }
+
+        private IArray<T>[] array;
+        private int minPriority;
 
         public PriorityQueue()
         {
-            this.array = new PriorityValue<T>[] { new PriorityValue<T>(1, new SingleArray<T>()) };
+            this.array = new[] { new SingleArray<T>() };
+            minPriority = 1;
         }
 
         public T Dequeue()
         {
             if (Size > 0)
             {
-                var queue = array[array.Length - 1].items;
-                if (queue.Size > 0)
-                {
-                    if (queue.Size > 0)
-                    {
-                        return queue.Remove(0);
-                    }
-                    else
-                    {
-                        Size--;
-                        Array.Resize(ref array, array.Length - 1);
-                        return Dequeue();
-                    }
+                var queue = array[0];
 
+                if (queue != null && queue.Size > 0)
+                {
+
+                    minPriority++;
+                    Size--;
+                   
+                    return queue.Remove(0);
                 }
+                else
+                {
+                    minPriority++;
+                    var newArray = new IArray<T>[array.Length - 1];
+                    for (int i = 1; i < array.Length; i++) {
+                        newArray[i - 1] = array[i];
+                    }
+                    array = newArray;
+                    return Dequeue();
+                }
+
             }
             throw new InvalidOperationException("Queue is empty");
         }
 
         public void Enqueue(T item, int priority)
         {
-            var isEnqueuedWithoutResize = false;
-            foreach (var priorityTuple in array)
+
+            ValidatePriority(priority);
+
+            if (array.Length > priority - 1)
             {
-                if (priorityTuple.Priority == priority)
+                if (array[priority - 1] != null)
                 {
-                    priorityTuple.items.Add(item);
-                    Size++;
-                    isEnqueuedWithoutResize = true;
-                    break;
+                    array[priority - 1].Add(item);
                 }
+                else
+                {
+                    if (priority < minPriority) {
+                        SlideToAhead();
+                    }
+           
+                    array[priority - 1] = new SingleArray<T>();
+                    array[priority - 1].Add(item);
+                }
+                if (minPriority > priority) {
+                    minPriority = priority;
+                }
+                Size++;
             }
-
-
-
-            if (!isEnqueuedWithoutResize)
+            else
             {
-                Resize();
-                var isEnqueuedAfterResize = false;
-                for (var i = 0; i < array.Length; i++)
-                {
-                    if (array[i].Priority > priority)
-                    {
-                        for (var j = i; j < array.Length - 1; j++)
-                        {
-                            var temp = array[j + 1];
-                            array[j + 1] = array[j];
-                            if (!isEnqueuedAfterResize)
-                            {
-                                array[j] = new PriorityValue<T>(priority, new SingleArray<T>());
-                                array[j].items.Add(item);
-                                isEnqueuedAfterResize = true;
-                            }
-                        }
-                    }
-                    if (!isEnqueuedAfterResize)
-                    {
-                        array[array.Length - 1] = new PriorityValue<T>(priority, new SingleArray<T>());
-                    }
-                    break;
-
-                }
+                IncreaseSize();
+                Enqueue(item, priority);
             }
         }
 
-        private void Resize()
+        private void ValidatePriority(int priority)
         {
-            Array.Resize(ref array, array.Length + 1);
+            if (priority < 1)
+            {
+                throw new ArgumentException("Priority not less 1");
+            }
+        }
+
+        private void IncreaseSize()
+        {
+            Array.Resize(ref array, array.Length+1);
+        }
+
+        private void SlideToAhead() {
+            var newArray = new IArray<T>[array.Length + 1];
+            Array.Copy(array, 0, newArray, 1, array.Length);
+            array = newArray;
         }
 
         public void Print()
         {
+            var priority = 1;
             foreach (var queue in array)
             {
-                Console.WriteLine("Priority " + queue.Priority);
-                for (var i = 0; i < queue.items.Size; i++)
-                {
-                    Console.Write(" " + queue.items[i] + " ");
+
+                Console.WriteLine("Priority " + priority);
+                if (queue == null) {
+                    priority++;
+                    continue;
                 }
+                for (var i = 0; i < queue.Size; i++)
+                {
+                    Console.Write(" " + queue[i] + " ");
+                }
+                Console.WriteLine("");
+                priority++;
             }
         }
     }
