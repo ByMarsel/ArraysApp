@@ -50,7 +50,9 @@
     <Compile Include="Models\Array\SingleArray.cs" />
     <Compile Include="Models\Array\VectorArray.cs" />
     <Compile Include="Models\Queue\IPriorityQueue.cs" />
+    <Compile Include="Models\Queue\IQueue.cs" />
     <Compile Include="Models\Queue\PriorityQueue.cs" />
+    <Compile Include="Models\Queue\Queue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

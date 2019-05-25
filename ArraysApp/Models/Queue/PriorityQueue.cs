@@ -1,9 +1,5 @@
 ﻿using ArraysApp.lib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArraysApp.Models.Queue
 {
@@ -18,7 +14,7 @@ namespace ArraysApp.Models.Queue
         public PriorityQueue()
         {
             this.array = new[] { new SingleArray<T>() };
-            minPriority = 1;
+            this.minPriority = 1;
         }
 
         public T Dequeue()
